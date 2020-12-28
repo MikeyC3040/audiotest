@@ -8,7 +8,6 @@ package gst
 */
 import "C"
 import (
-	"fmt"
 	"io"
 	"sync"
 	"unsafe"
@@ -31,8 +30,8 @@ var pipeline = &Pipeline{}
 var pipelinesLock sync.Mutex
 
 // CreatePipeline creates a GStreamer Pipeline
-func CreatePipeline(audioTrack *webrtc.Track) *Pipeline {
-	pipelineStr := fmt.Sprintf("audiotestsrc ! queue ! audioconvert ! audioresample ! opusenc ! appsink name=audio", containerPath)
+func CreatePipeline(audioTrack *webrtc.TrackLocalStaticSample) *Pipeline {
+	pipelineStr := "audiotestsrc ! queue ! audioconvert ! audioresample ! opusenc ! appsink name=audio"
 
 	pipelineStrUnsafe := C.CString(pipelineStr)
 	defer C.free(unsafe.Pointer(pipelineStrUnsafe))
@@ -74,7 +73,7 @@ const (
 
 //export goHandlePipelineBuffer
 func goHandlePipelineBuffer(buffer unsafe.Pointer, bufferLen C.int, duration C.int, isVideo C.int) {
-	var track *webrtc.Track
+	var track *webrtc.TrackLocalStaticSample
 	var samples uint32
 
 	samples = uint32(audioClockRate * (float32(duration) / 1000000000))
